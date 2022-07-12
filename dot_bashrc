@@ -1,6 +1,9 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+# Set env
+export EDITOR=nvim
+
 # 1password SSH agent
 export SSH_AUTH_SOCK=$HOME/.ssh/agent.sock
 ALREADY_RUNNING=$(ps -auxww | grep -q "[n]piperelay.exe -ei -s //./pipe/openssh-ssh-agent"; echo $?)
