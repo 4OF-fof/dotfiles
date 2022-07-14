@@ -1,4 +1,7 @@
 tasks:
   - init: >-
       sudo apt remove tmux &&
-      brew install tmux fish exa fzf nvim
+      brew install tmux fish exa fzf &&
+      curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage > ~/nvim.appimage &&
+      chmod u+x ~/nvim.appimage
+
