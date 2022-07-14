@@ -1,5 +1,2 @@
 image:
   file: .gitpod.Dockerfile
-
-tasks:
-  - before: tmux new-session -s root
