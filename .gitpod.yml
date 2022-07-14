@@ -1,0 +1,4 @@
+tasks:
+  - init: >-
+      sudo apt remove tmux
+      brew install tmux fish exa fzf nvim
