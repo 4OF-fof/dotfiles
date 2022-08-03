@@ -3,6 +3,7 @@
 
 # Set env
 export EDITOR=nvim
+. "$HOME/.cargo/env"
 
 # 1password SSH agent
 export SSH_AUTH_SOCK=$HOME/.ssh/agent.sock
