@@ -1,0 +1,19 @@
+[[link]]
+source = "wezterm/wezterm.lua"
+target = "~/.config/wezterm/wezterm.lua"
+
+[[link]]
+source = "zsh/.zshrc"
+target = "~/.zshrc"
+
+[[link]]
+source = "zsh/module"
+target = "~/.zsh_module"
+
+[[link]]
+source = "zsh/sheldon/plugins.toml"
+target = "~/.config/sheldon/plugins.toml"
+
+[[link]]
+source = "tmux/.tmux.conf"
+target = "~/.tmux.conf"
