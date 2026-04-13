@@ -8,9 +8,19 @@ Windows
 .\install.ps1
 ```
 
-`install.toml` の `host` は配列で指定できます。未指定なら両方、`host = ["windows"]` は PowerShell のみ、`host = ["mac"]` は `install.sh` のみ、`host = ["mac", "windows"]` は両方で有効です。
-
+brew(scoop)非対応
 Vite+
 ```sh
 curl -fsSL https://vite.plus | bash
+```
+
+
+設定
+```toml
+[[link]]
+source = "dotfiles/path/to/file"
+target = "host/path/to/file"
+host = ["mac", "windows"]
+[link.windows]
+target = "win/path/to/file"
 ```

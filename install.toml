@@ -2,9 +2,6 @@
 source = "wezterm/wezterm.lua"
 target = "~/.config/wezterm/wezterm.lua"
 
-# [link.windows]
-# target = "~/.config/wezterm/wezterm.lua"
-
 [[link]]
 source = "zsh/.zshrc"
 target = "~/.zshrc"
