@@ -2,17 +2,23 @@
 source = "wezterm/wezterm.lua"
 target = "~/.config/wezterm/wezterm.lua"
 
+# [link.windows]
+# target = "~/.config/wezterm/wezterm.lua"
+
 [[link]]
 source = "zsh/.zshrc"
 target = "~/.zshrc"
+host = ["mac"]
 
 [[link]]
 source = "zsh/module"
 target = "~/.zsh_module"
+host = ["mac"]
 
 [[link]]
 source = "zsh/sheldon/plugins.toml"
 target = "~/.config/sheldon/plugins.toml"
+host = ["mac"]
 
 [[link]]
 source = "tmux/.tmux.conf"

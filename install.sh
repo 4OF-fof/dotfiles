@@ -12,32 +12,85 @@ fi
 
 LINK_DEFINITIONS="$(
   awk '
-    /^\[\[link\]\]$/ {
-      if (source != "" && target != "") {
+    function normalize_host(value) {
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", value)
+      gsub(/^"/, "", value)
+      gsub(/"$/, "", value)
+      value = tolower(value)
+      if (value == "macos" || value == "darwin") {
+        return "mac"
+      }
+      if (value == "win") {
+        return "windows"
+      }
+      return value
+    }
+    function host_matches(spec,    value, count, i, part) {
+      value = spec
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", value)
+      if (value == "") {
+        return 1
+      }
+      if (value !~ /^\[/) {
+        return normalize_host(value) == "mac"
+      }
+      sub(/^\[/, "", value)
+      sub(/\]$/, "", value)
+      count = split(value, parts, ",")
+      for (i = 1; i <= count; i++) {
+        part = normalize_host(parts[i])
+        if (part == "mac") {
+          return 1
+        }
+      }
+      return 0
+    }
+    function flush_link() {
+      if (source != "" && target != "" && host_matches(host)) {
         print source "\t" target
       }
+    }
+    /^\[\[link\]\]$/ {
+      flush_link()
       source = ""
       target = ""
+      host = ""
+      in_link = 1
+      in_windows = 0
       next
     }
-    /^source = "/ {
+    /^\[link\.windows\]$/ {
+      if (in_link) {
+        in_windows = 1
+      }
+      next
+    }
+    /^\[/ {
+      in_windows = 0
+      next
+    }
+    /^source = "/ && in_link && !in_windows {
       value = $0
       sub(/^source = "/, "", value)
       sub(/"$/, "", value)
       source = value
       next
     }
-    /^target = "/ {
+    /^target = "/ && in_link && !in_windows {
       value = $0
       sub(/^target = "/, "", value)
       sub(/"$/, "", value)
       target = value
       next
     }
+    /^host = / && in_link && !in_windows {
+      value = $0
+      sub(/^host = /, "", value)
+      host = value
+      next
+    }
     END {
-      if (source != "" && target != "") {
-        print source "\t" target
-      }
+      flush_link()
     }
   ' "${INSTALL_CONFIG}"
 )"
