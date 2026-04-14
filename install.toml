@@ -24,3 +24,5 @@ target = "~/.tmux.conf"
 [[link]]
 source = "nvim"
 target = "~/.config/nvim"
+[link.windows]
+target = "~/AppData/Local/nvim"
