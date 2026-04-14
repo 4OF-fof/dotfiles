@@ -5,10 +5,12 @@ brew bundle
 ```
 Windows
 ```powershell
-./install.ps1
+.\install.ps1
 ```
 
 brew(scoop)非対応
+
+
 Vite+
 ```sh
 curl -fsSL https://vite.plus | bash
