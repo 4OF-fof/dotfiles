@@ -1,1 +1,1 @@
-alias ls='eza'
+alias ls='lsd'
