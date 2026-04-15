@@ -18,6 +18,10 @@ config.color_scheme = "Tokyo Night"
 config.native_macos_fullscreen_mode = true
 config.enable_tab_bar = false
 config.disable_default_key_bindings = true
+config.keys = {
+    { key = "c", mods = "CMD", action = wezterm.action.CopyTo("Clipboard") },
+    { key = "v", mods = "CMD", action = wezterm.action.PasteFrom("Clipboard") },
+}
 
 config.enable_scroll_bar = false
 config.audible_bell = "Disabled"

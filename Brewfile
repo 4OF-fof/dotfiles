@@ -2,6 +2,7 @@ tap "anomalyco/tap"
 
 brew "gh"
 brew "fd"
+brew "sk"
 brew "ripgrep"
 brew "tmux"
 brew "neovim"
