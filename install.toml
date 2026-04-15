@@ -22,6 +22,10 @@ source = "tmux/.tmux.conf"
 target = "~/.tmux.conf"
 
 [[link]]
+source = "tmux/tmux_module"
+target = "~/tmux"
+
+[[link]]
 source = "nvim"
 target = "~/.config/nvim"
 [link.windows]

@@ -17,6 +17,7 @@ config.color_scheme = "Tokyo Night"
 
 config.native_macos_fullscreen_mode = true
 config.enable_tab_bar = false
+config.disable_default_key_bindings = true
 
 config.enable_scroll_bar = false
 config.audible_bell = "Disabled"
@@ -28,13 +29,13 @@ wezterm.on("gui-startup", function(cmd)
     local dims = window:get_dimensions()
 
     local font_size = 12
-  if dims.dpi > 120 then
-    font_size = 14
-  end
+    if dims.dpi > 120 then
+        font_size = 14
+    end
 
-  window:set_config_overrides({
-    font_size = font_size
-  })
+    window:set_config_overrides({
+        font_size = font_size
+    })
 end)
 
 return config
