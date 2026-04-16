@@ -30,3 +30,13 @@ source = "nvim"
 target = "~/.config/nvim"
 [link.windows]
 target = "~/AppData/Local/nvim"
+
+[[link]]
+source = "pwsh/Microsoft.PowerShell_profile.ps1"
+target = "~/Documents/PowerShell/Microsoft.PowerShell_profile.ps1"
+host = ["windows"]
+
+[[link]]
+source = "pwsh/module"
+target = "~/Documents/PowerShell/module"
+host = ["windows"]
