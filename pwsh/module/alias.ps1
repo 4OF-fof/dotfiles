@@ -1,3 +1,5 @@
+# deps:
+
 if (Get-Command lsd -ErrorAction SilentlyContinue) {
     function lsd_default {
         lsd --ignore-glob nul @args

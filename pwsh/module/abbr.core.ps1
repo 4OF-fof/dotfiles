@@ -1,3 +1,5 @@
+# deps:
+
 if (-not (Get-Module -ListAvailable -Name PSReadLine)) {
     return
 }

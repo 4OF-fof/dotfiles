@@ -5,40 +5,57 @@
 eval "$(sheldon source)"
 
 # Module
-for f in ~/.zsh_module/*.zsh; do
-  source "$f"
+typeset -gA _zsh_module_paths _zsh_module_loading _zsh_module_loaded
+
+for f in ~/.zsh_module/*.zsh(N); do
+  _zsh_module_paths[${f:t:r}]="${f:A}"
 done
 
-# abbr Highlight
-chroma_single_word() {
-  (( next_word = 2 | 8192 ))
+zsh_module_dependencies() {
+  local file=$1 line
+  reply=()
 
-  local __first_call="$1" __wrd="$2" __start_pos="$3" __end_pos="$4"
-  local __style
-
-  (( __first_call )) && { __style=${FAST_THEME_NAME}alias }
-  [[ -n "$__style" ]] && (( __start=__start_pos-${#PREBUFFER}, __end=__end_pos-${#PREBUFFER}, __start >= 0 )) && reply+=("$__start $__end ${FAST_HIGHLIGHT_STYLES[$__style]}")
-
-  (( this_word = next_word ))
-  _start_pos=$_end_pos
-
-  return 0
+  while IFS= read -r line; do
+    [[ $line == '# deps:'* ]] || continue
+    line=${line#\# deps:}
+    reply=(${(z)line})
+    return 0
+  done < "$file"
 }
 
-register_single_word_chroma() {
-  local word=$1
-  if [[ -x $(command -v $word) ]] || [[ -n $FAST_HIGHLIGHT["chroma-$word"] ]]; then
+load_zsh_module() {
+  local module_name=$1
+  local file=${_zsh_module_paths[$module_name]}
+  local dep
+
+  if [[ -z $file ]]; then
+    print -u2 -- "zsh module dependency not found: $module_name"
     return 1
   fi
 
-  FAST_HIGHLIGHT+=( "chroma-$word" chroma_single_word )
-  return 0
+  [[ -n ${_zsh_module_loaded[$file]} ]] && return 0
+
+  if [[ -n ${_zsh_module_loading[$file]} ]]; then
+    print -u2 -- "circular zsh module dependency detected: $module_name"
+    return 1
+  fi
+
+  _zsh_module_loading[$file]=1
+
+  zsh_module_dependencies "$file"
+  for dep in "${reply[@]}"; do
+    load_zsh_module "$dep" || return 1
+  done
+
+  source "$file"
+
+  unset "_zsh_module_loading[$file]"
+  _zsh_module_loaded[$file]=1
 }
 
-if [[ -n $FAST_HIGHLIGHT ]]; then
-  for abbr in ${(f)"$(abbr list-abbreviations)"}; do
-    if [[ $abbr != *' '* ]]; then
-      register_single_word_chroma ${(Q)abbr}
-    fi
-  done
-fi
+for module_name in ${(on)${(k)_zsh_module_paths}}; do
+  load_zsh_module "$module_name" || return 1
+done
+
+unfunction zsh_module_dependencies load_zsh_module
+unset module_name f
