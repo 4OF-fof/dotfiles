@@ -1,8 +1,4 @@
 [[link]]
-source = "wezterm/wezterm.lua"
-target = "~/.config/wezterm/wezterm.lua"
-
-[[link]]
 source = "zsh/.zshrc"
 target = "~/.zshrc"
 host = ["mac"]
@@ -16,6 +12,20 @@ host = ["mac"]
 source = "zsh/sheldon/plugins.toml"
 target = "~/.config/sheldon/plugins.toml"
 host = ["mac"]
+
+[[link]]
+source = "pwsh/Microsoft.PowerShell_profile.ps1"
+target = "~/Documents/PowerShell/Microsoft.PowerShell_profile.ps1"
+host = ["windows"]
+
+[[link]]
+source = "pwsh/module"
+target = "~/Documents/PowerShell/module"
+host = ["windows"]
+
+[[link]]
+source = "starship/starship.toml"
+target = "~/.config/starship.toml"
 
 [[link]]
 source = "tmux/.tmux.conf"
@@ -32,11 +42,5 @@ target = "~/.config/nvim"
 target = "~/AppData/Local/nvim"
 
 [[link]]
-source = "pwsh/Microsoft.PowerShell_profile.ps1"
-target = "~/Documents/PowerShell/Microsoft.PowerShell_profile.ps1"
-host = ["windows"]
-
-[[link]]
-source = "pwsh/module"
-target = "~/Documents/PowerShell/module"
-host = ["windows"]
+source = "wezterm/wezterm.lua"
+target = "~/.config/wezterm/wezterm.lua"

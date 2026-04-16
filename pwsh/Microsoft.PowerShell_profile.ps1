@@ -75,3 +75,6 @@ foreach ($path in $script:pwshModuleLoadOrder) {
 }
 
 Remove-Item Function:\Get-PwshModuleDependencies, Function:\Resolve-PwshModuleLoadOrder -ErrorAction SilentlyContinue
+
+# Starship
+Invoke-Expression (&starship init powershell)

@@ -1,7 +1,7 @@
 # Vite+ bin (https://viteplus.dev)
 . "$HOME/.vite-plus/env"
 
-# Sheldon plugin manager
+# Sheldon (plugin manager)
 eval "$(sheldon source)"
 
 # Module
@@ -59,3 +59,6 @@ done
 
 unfunction zsh_module_dependencies load_zsh_module
 unset module_name f
+
+# Starship
+eval "$(starship init zsh)"
