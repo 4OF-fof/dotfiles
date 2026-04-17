@@ -29,15 +29,16 @@ config.audible_bell = "Disabled"
 -- 起動時フルスクリーン/dpiでフォントサイズ変更
 wezterm.on("gui-startup", function(cmd)
     local tab, pane, window = mux.spawn_window(cmd or {})
-    window:gui_window():perform_action(wezterm.action.ToggleFullScreen, pane)
-    local dims = window:get_dimensions()
+    local gui_window = window:gui_window()
+    gui_window:perform_action(wezterm.action.ToggleFullScreen, pane)
+    local dims = gui_window:get_dimensions()
 
     local font_size = 12
-    if dims.dpi > 120 then
+    if dims and dims.dpi and dims.dpi > 120 then
         font_size = 14
     end
 
-    window:set_config_overrides({
+    gui_window:set_config_overrides({
         font_size = font_size
     })
 end)
