@@ -1,6 +1,4 @@
 # deps: abbr
-
-(( $+commands[abbr] )) || return
 [[ -n $FAST_HIGHLIGHT ]] || return
 
 chroma_single_word() {
