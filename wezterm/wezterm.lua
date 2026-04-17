@@ -2,12 +2,8 @@ local wezterm = require("wezterm")
 local mux = wezterm.mux
 local config = wezterm.config_builder()
 
-local tmux
-if wezterm.target_triple:match("darwin") then
-    tmux = "/opt/homebrew/bin/tmux"
-else
-    tmux = "tmux"
-end
+local is_mac = wezterm.target_triple:match("darwin") ~= nil
+local tmux = is_mac and "/opt/homebrew/bin/tmux" or "tmux"
 
 config.default_prog = { tmux }
 
@@ -15,7 +11,7 @@ config.font = wezterm.font("UDEV Gothic NF")
 
 config.color_scheme = "Tokyo Night"
 
-config.native_macos_fullscreen_mode = true
+config.native_macos_fullscreen_mode = is_mac
 config.enable_tab_bar = false
 config.disable_default_key_bindings = true
 config.keys = {
