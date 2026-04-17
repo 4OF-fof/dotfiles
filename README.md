@@ -5,11 +5,12 @@ brew bundle
 ```
 Windows
 ```powershell
+scoop import .\Scoopfile
+winget import -i .\Wingetfile
 .\install.ps1
 ```
 
 brew(scoop)非対応
-
 
 Vite+
 ```sh
