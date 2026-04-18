@@ -9,7 +9,37 @@ config.default_prog = { tmux }
 
 config.font = wezterm.font("UDEV Gothic NF")
 
-config.color_scheme = "Tokyo Night"
+config.colors = {
+  foreground = '#d6e0fc',
+  background = '#222436',
+  cursor_bg = '#d6e0fc',
+  cursor_fg = '#222436',
+  cursor_border = '#d6e0fc',
+  selection_fg = '#d6e0fc',
+  selection_bg = '#46466a',
+  scrollbar_thumb = '#46466a',
+  split = '#46466a',
+  ansi = {
+    '#202030',
+    '#ff5775',
+    '#c7ff80',
+    '#ffbb5b',
+    '#8ab0ff',
+    '#bb91ff',
+    '#71dfff',
+    '#a5a5cc',
+  },
+  brights = {
+    '#46466a',
+    '#ff5775',
+    '#c7ff80',
+    '#ffbb5b',
+    '#8ab0ff',
+    '#bb91ff',
+    '#71dfff',
+    '#ffffff',
+  },
+}
 
 config.native_macos_fullscreen_mode = is_mac
 config.enable_tab_bar = false
