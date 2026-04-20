@@ -30,7 +30,11 @@ function _z_expand_before_accept() {
     CURSOR=${#BUFFER}
   fi
 
-  zle .accept-line
+  if (( ${+widgets[abbr-expand-and-accept]} )); then
+    zle abbr-expand-and-accept
+  else
+    zle .accept-line
+  fi
 }
 
 zle -N accept-line _z_expand_before_accept
