@@ -68,7 +68,7 @@
         {
             "Info": "",
             "Source": "main",
-            "Name": "skim"
+            "Name": "fzf"
         },
         {
             "Info": "",

@@ -2,7 +2,7 @@ tap "anomalyco/tap"
 
 brew "gh"
 brew "fd"
-brew "sk"
+brew "fzf"
 brew "ripgrep"
 brew "zoxide"
 brew "tmux"

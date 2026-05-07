@@ -32,7 +32,7 @@ source = "tmux/.tmux.conf"
 target = "~/.tmux.conf"
 
 [[link]]
-source = "tmux/tmux_module"
+source = "tmux/module"
 target = "~/tmux"
 
 [[link]]
