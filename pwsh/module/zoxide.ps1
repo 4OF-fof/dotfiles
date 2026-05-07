@@ -73,12 +73,19 @@ function Resolve-ZoxideAcceptLineCommand {
     }
 
     $command = $tokens[0].Content
-    if ($command -eq 'zi') {
+    if ($command -notin @('z', 'zi')) {
         return $null
     }
 
-    if ($command -ne 'z') {
-        return $null
+    $result = [pscustomobject]@{
+        Command = $command
+        Query = $null
+        Expansion = $null
+        Failed = $false
+    }
+
+    if ($command -eq 'zi') {
+        return $result
     }
 
     $arguments = @(
@@ -89,9 +96,10 @@ function Resolve-ZoxideAcceptLineCommand {
     )
 
     if ($arguments.Count -eq 0) {
-        return $null
+        return $result
     }
 
+    $result.Query = $arguments -join ' '
     $currentDirectory = __zoxide_pwd
     if ($null -ne $currentDirectory) {
         $destination = @(__zoxide_bin query --exclude $currentDirectory "--" @arguments 2>$null) | Select-Object -First 1
@@ -101,10 +109,12 @@ function Resolve-ZoxideAcceptLineCommand {
     }
 
     if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($destination)) {
-        return $null
+        $result.Failed = $true
+        return $result
     }
 
-    return Format-ZoxideLocationCommand -Path $destination.Trim()
+    $result.Expansion = Format-ZoxideLocationCommand -Path $destination.Trim()
+    return $result
 }
 
 Set-PSReadLineKeyHandler -Key Enter -BriefDescription 'Expand zoxide and accept line' -ScriptBlock {
@@ -112,10 +122,21 @@ Set-PSReadLineKeyHandler -Key Enter -BriefDescription 'Expand zoxide and accept 
     $cursor = 0
     [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
 
-    $command = Resolve-ZoxideAcceptLineCommand -Line $line
-    if ($null -ne $command) {
-        [Microsoft.PowerShell.PSConsoleReadLine]::Replace(0, $line.Length, $command)
+    $zoxideCommand = Resolve-ZoxideAcceptLineCommand -Line $line
+    if ($null -ne $zoxideCommand -and $null -ne $zoxideCommand.Expansion) {
+        [Microsoft.PowerShell.PSConsoleReadLine]::Replace(0, $line.Length, $zoxideCommand.Expansion)
         [Microsoft.PowerShell.PSConsoleReadLine]::EndOfLine()
+    }
+
+    if ($null -ne $zoxideCommand -and $zoxideCommand.Command -eq 'zi') {
+        [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+        return
+    }
+
+    if ($null -ne $zoxideCommand -and $zoxideCommand.Failed) {
+        Write-Host "zoxide: not found: $($zoxideCommand.Query)"
+        [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+        return
     }
 
     Expand-Abbr -AcceptLine
