@@ -13,7 +13,11 @@ function _z_expand_before_accept() {
     rest="${line#* }"
 
     if [[ "$cmd" == "z" ]]; then
-      dest="$(zoxide query -- ${=rest} 2>/dev/null)" || return 0
+      dest="$(zoxide query -- ${=rest} 2>/dev/null)" || {
+        zle -M "zoxide: not found: ${rest}"
+        zle .accept-line
+        return $?
+      }
     else
       return 0
     fi
