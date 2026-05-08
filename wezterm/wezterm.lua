@@ -51,6 +51,8 @@ config.keys = {
 
 config.enable_scroll_bar = false
 config.audible_bell = "Disabled"
+config.default_cursor_style = "SteadyBlock"
+config.cursor_blink_rate = 0
 
 -- 起動時フルスクリーン/dpiでフォントサイズ変更
 wezterm.on("gui-startup", function(cmd)
