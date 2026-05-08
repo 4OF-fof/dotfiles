@@ -1,4 +1,3 @@
-# deps: abbr
 [[ -n $FAST_HIGHLIGHT ]] || return
 
 chroma_single_word() {

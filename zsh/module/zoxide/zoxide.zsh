@@ -1,5 +1,3 @@
-# deps:
-
 eval "$(zoxide init zsh)"
 
 function _z_expand_before_accept() {

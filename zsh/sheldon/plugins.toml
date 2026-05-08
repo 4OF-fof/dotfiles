@@ -8,3 +8,18 @@ github = "zdharma-continuum/fast-syntax-highlighting"
 
 [plugins.zsh-abbr]
 github = "olets/zsh-abbr"
+
+# local plugins
+[plugins.alias]
+local = "~/.zsh_module/alias"
+
+[plugins.abbr]
+local = "~/.zsh_module/abbr"
+depends = ["alias"]
+
+[plugins.abbr-highlight]
+local = "~/.zsh_module/abbr-highlight"
+depends = ["abbr"]
+
+[plugins.zoxide]
+local = "~/.zsh_module/zoxide"
