@@ -1,0 +1,9 @@
+[user]
+	name = 4OF
+	email = 4OF@4of.dev
+
+[init]
+	defaultBranch = master
+
+[core]
+	excludesFile = ~/.gitignore_global

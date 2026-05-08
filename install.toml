@@ -1,4 +1,12 @@
 [[link]]
+source = "git/.gitconfig"
+target = "~/.gitconfig"
+
+[[link]]
+source = "git/.gitignore_global"
+target = "~/.gitignore_global"
+
+[[link]]
 source = "zsh/.zshrc"
 target = "~/.zshrc"
 host = ["mac"]
