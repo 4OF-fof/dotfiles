@@ -12,6 +12,11 @@ target = "~/.zshrc"
 host = ["mac"]
 
 [[link]]
+source = "zsh/.zprofile"
+target = "~/.zprofile"
+host = ["mac"]
+
+[[link]]
 source = "zsh/module"
 target = "~/.zsh_module"
 host = ["mac"]
