@@ -15,11 +15,9 @@ local = "~/.zsh_module/alias"
 
 [plugins.abbr]
 local = "~/.zsh_module/abbr"
-depends = ["alias"]
 
 [plugins.abbr-highlight]
 local = "~/.zsh_module/abbr-highlight"
-depends = ["abbr"]
 
 [plugins.zoxide]
 local = "~/.zsh_module/zoxide"
