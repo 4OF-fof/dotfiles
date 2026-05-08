@@ -3,19 +3,34 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-INSTALL_CONFIG="${DOTFILES_DIR}/install.toml"
+DOCS_DIR="${DOTFILES_DIR}/docs"
+DRY_RUN="${DRY_RUN:-0}"
 
-if [[ ! -f "${INSTALL_CONFIG}" ]]; then
-  echo "install config not found: ${INSTALL_CONFIG}" >&2
+if [[ ! -d "${DOCS_DIR}" ]]; then
+  echo "docs directory not found: ${DOCS_DIR}" >&2
   exit 1
 fi
 
-LINK_DEFINITIONS="$(
+DOC_FILES=("${DOCS_DIR}"/*.md)
+if [[ ! -e "${DOC_FILES[0]}" ]]; then
+  echo "no docs files found in: ${DOCS_DIR}" >&2
+  exit 1
+fi
+
+FRONTMATTER_DEFINITIONS="$(
   awk '
-    function normalize_host(value) {
+    function trim(value) {
       gsub(/^[[:space:]]+|[[:space:]]+$/, "", value)
+      return value
+    }
+    function strip_quotes(value) {
+      value = trim(value)
       gsub(/^"/, "", value)
       gsub(/"$/, "", value)
+      return value
+    }
+    function normalize_host(value) {
+      value = strip_quotes(value)
       value = tolower(value)
       if (value == "macos" || value == "darwin") {
         return "mac"
@@ -26,8 +41,7 @@ LINK_DEFINITIONS="$(
       return value
     }
     function host_matches(spec,    value, count, i, part) {
-      value = spec
-      gsub(/^[[:space:]]+|[[:space:]]+$/, "", value)
+      value = trim(spec)
       if (value == "") {
         return 1
       }
@@ -45,59 +59,188 @@ LINK_DEFINITIONS="$(
       }
       return 0
     }
+    function emit_once(kind, value, key) {
+      value = strip_quotes(value)
+      if (value == "") {
+        return
+      }
+      key = kind "\t" value
+      if (!seen[key]++) {
+        print kind "\t" value
+      }
+    }
+    function emit_brew(value) {
+      value = strip_quotes(value)
+      if (value == "") {
+        return
+      }
+      emit_once("BREW", value)
+    }
     function flush_link() {
-      if (source != "" && target != "" && host_matches(host)) {
-        print source "\t" target
+      if (link_source != "" && link_target != "" && host_matches(link_host)) {
+        emit_once("LINK", link_source "\t" link_target)
+      }
+      link_source = ""
+      link_target = ""
+      link_host = ""
+      in_link_item = 0
+      in_windows = 0
+    }
+    function reset_section(value) {
+      if (section == "links") {
+        flush_link()
+      }
+      section = value
+      in_windows = 0
+    }
+    FNR == 1 {
+      if (in_frontmatter && frontmatter_delimiters == 1) {
+        frontmatter_error = 1
+      }
+      in_frontmatter = 0
+      frontmatter_delimiters = 0
+      reset_section("")
+    }
+    /^---$/ {
+      frontmatter_delimiters++
+      if (frontmatter_delimiters == 1 && FNR == 1) {
+        in_frontmatter = 1
+        found_frontmatter = 1
+        next
+      }
+      if (frontmatter_delimiters == 2 && in_frontmatter) {
+        reset_section("")
+        in_frontmatter = 0
+        next
       }
     }
-    /^\[\[link\]\]$/ {
+    !in_frontmatter {
+      next
+    }
+    /^links:[[:space:]]*$/ {
+      reset_section("links")
+      next
+    }
+    /^brew:[[:space:]]*$/ {
+      reset_section("brew")
+      next
+    }
+    /^brew:[[:space:]]*[^[:space:]]/ {
+      reset_section("")
+      value = $0
+      sub(/^brew:[[:space:]]*/, "", value)
+      emit_brew(value)
+      next
+    }
+    /^cask:[[:space:]]*$/ {
+      reset_section("cask")
+      next
+    }
+    /^cask:[[:space:]]*[^[:space:]]/ {
+      reset_section("")
+      value = $0
+      sub(/^cask:[[:space:]]*/, "", value)
+      emit_once("CASK", value)
+      next
+    }
+    /^[[:alnum:]_-]+:/ {
+      reset_section("")
+      next
+    }
+    section == "brew" && /^  - / {
+      value = $0
+      sub(/^  -[[:space:]]*/, "", value)
+      emit_brew(value)
+      next
+    }
+    section == "cask" && /^  - / {
+      value = $0
+      sub(/^  -[[:space:]]*/, "", value)
+      emit_once("CASK", value)
+      next
+    }
+    section == "links" && /^  - source:[[:space:]]*/ {
       flush_link()
-      source = ""
-      target = ""
-      host = ""
-      in_link = 1
-      in_windows = 0
-      next
-    }
-    /^\[link\.windows\]$/ {
-      if (in_link) {
-        in_windows = 1
-      }
-      next
-    }
-    /^\[/ {
-      in_windows = 0
-      next
-    }
-    /^source = "/ && in_link && !in_windows {
       value = $0
-      sub(/^source = "/, "", value)
-      sub(/"$/, "", value)
-      source = value
+      sub(/^  - source:[[:space:]]*/, "", value)
+      link_source = strip_quotes(value)
+      in_link_item = 1
       next
     }
-    /^target = "/ && in_link && !in_windows {
-      value = $0
-      sub(/^target = "/, "", value)
-      sub(/"$/, "", value)
-      target = value
+    section == "links" && in_link_item && /^    windows:[[:space:]]*$/ {
+      in_windows = 1
       next
     }
-    /^host = / && in_link && !in_windows {
+    section == "links" && in_link_item && /^    target:[[:space:]]*/ && !in_windows {
       value = $0
-      sub(/^host = /, "", value)
-      host = value
+      sub(/^    target:[[:space:]]*/, "", value)
+      link_target = strip_quotes(value)
+      next
+    }
+    section == "links" && in_link_item && /^    host:[[:space:]]*/ && !in_windows {
+      value = $0
+      sub(/^    host:[[:space:]]*/, "", value)
+      link_host = value
       next
     }
     END {
-      flush_link()
+      if (section == "links") {
+        flush_link()
+      }
+      if (!found_frontmatter || frontmatter_error) {
+        exit 2
+      }
     }
-  ' "${INSTALL_CONFIG}"
-)"
+  ' "${DOC_FILES[@]}"
+)" || {
+  status=$?
+  if [[ "${status}" -eq 2 ]]; then
+    echo "front matter not found or not closed in docs" >&2
+  else
+    echo "failed to parse docs front matter" >&2
+  fi
+  exit "${status}"
+}
+
+LINK_DEFINITIONS="$(awk -F '\t' '$1 == "LINK" { print $2 "\t" $3 }' <<<"${FRONTMATTER_DEFINITIONS}")"
+BREW_DEFINITIONS="$(awk -F '\t' '$1 == "BREW" { print $2 }' <<<"${FRONTMATTER_DEFINITIONS}")"
+CASK_DEFINITIONS="$(awk -F '\t' '$1 == "CASK" { print $2 }' <<<"${FRONTMATTER_DEFINITIONS}")"
 
 if [[ -z "${LINK_DEFINITIONS}" ]]; then
-  echo "no link definitions found in: ${INSTALL_CONFIG}" >&2
+  echo "no link definitions found in docs front matter: ${DOCS_DIR}" >&2
   exit 1
+fi
+
+BREWFILE="$(mktemp)"
+cleanup() {
+  rm -f "${BREWFILE}"
+}
+trap cleanup EXIT
+
+{
+  while IFS= read -r formula_name; do
+    [[ -n "${formula_name}" ]] || continue
+    printf 'brew "%s"\n' "${formula_name}"
+  done <<<"${BREW_DEFINITIONS}"
+
+  while IFS= read -r cask_name; do
+    [[ -n "${cask_name}" ]] || continue
+    printf 'cask "%s"\n' "${cask_name}"
+  done <<<"${CASK_DEFINITIONS}"
+} >"${BREWFILE}"
+
+if [[ -s "${BREWFILE}" ]]; then
+  if [[ "${DRY_RUN}" == "1" ]]; then
+    echo "# Generated Brewfile"
+    sed 's/^/DRY_RUN brewfile: /' "${BREWFILE}"
+  else
+    if ! command -v brew >/dev/null 2>&1; then
+      echo "Homebrew is required to install packages from docs front matter" >&2
+      exit 1
+    fi
+
+    brew bundle --file "${BREWFILE}"
+  fi
 fi
 
 while IFS= read -r link_definition; do
@@ -111,6 +254,11 @@ while IFS= read -r link_definition; do
   if [[ ! -e "${source_abs}" ]]; then
     echo "source config not found: ${source_abs}" >&2
     exit 1
+  fi
+
+  if [[ "${DRY_RUN}" == "1" ]]; then
+    echo "DRY_RUN linked: ${target_path} -> ${source_abs}"
+    continue
   fi
 
   mkdir -p "$(dirname "${target_path}")"
