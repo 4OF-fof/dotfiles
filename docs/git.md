@@ -4,6 +4,9 @@ links:
     target: ~/.gitconfig
   - source: git/.gitignore_global
     target: ~/.gitignore_global
+  - source: git/.gitconfig_win
+    target: ~/.gitconfig.local
+    host: ["windows"]
 brew:
   - git
   - gh
