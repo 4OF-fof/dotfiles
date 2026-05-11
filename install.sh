@@ -5,6 +5,24 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOCS_DIR="${DOTFILES_DIR}/docs"
 DRY_RUN="${DRY_RUN:-0}"
+MODE="all"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --link)
+      MODE="link"
+      shift
+      ;;
+    --install)
+      MODE="install"
+      shift
+      ;;
+    *)
+      echo "Usage: $0 [--link|--install]" >&2
+      exit 1
+      ;;
+  esac
+done
 
 if [[ ! -d "${DOCS_DIR}" ]]; then
   echo "docs directory not found: ${DOCS_DIR}" >&2
@@ -229,7 +247,7 @@ trap cleanup EXIT
   done <<<"${CASK_DEFINITIONS}"
 } >"${BREWFILE}"
 
-if [[ -s "${BREWFILE}" ]]; then
+if [[ -s "${BREWFILE}" ]] && [[ "${MODE}" == "all" || "${MODE}" == "install" ]]; then
   if [[ "${DRY_RUN}" == "1" ]]; then
     echo "# Generated Brewfile"
     sed 's/^/DRY_RUN brewfile: /' "${BREWFILE}"
@@ -243,6 +261,7 @@ if [[ -s "${BREWFILE}" ]]; then
   fi
 fi
 
+if [[ "${MODE}" == "all" || "${MODE}" == "link" ]]; then
 while IFS= read -r link_definition; do
   IFS=$'\t' read -r source_path target_path <<<"${link_definition}"
 
@@ -272,3 +291,4 @@ while IFS= read -r link_definition; do
 done <<EOF
 ${LINK_DEFINITIONS}
 EOF
+fi
