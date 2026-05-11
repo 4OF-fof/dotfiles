@@ -1,5 +1,8 @@
 [CmdletBinding(SupportsShouldProcess)]
-param()
+param(
+    [ValidateSet("link", "install")]
+    [string]$Mode
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
@@ -7,6 +10,8 @@ $ErrorActionPreference = "Stop"
 $dotfilesDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $docsDir = Join-Path $dotfilesDir "docs"
 $dryRun = $env:DRY_RUN -eq "1"
+$doLink = [string]::IsNullOrEmpty($Mode) -or $Mode -eq "link"
+$doInstall = [string]::IsNullOrEmpty($Mode) -or $Mode -eq "install"
 
 if (-not (Test-Path -LiteralPath $docsDir -PathType Container)) {
     throw "docs directory not found: $docsDir"
@@ -266,7 +271,7 @@ if ($definitions.Links.Count -eq 0) {
     throw "no link definitions found in docs front matter: $docsDir"
 }
 
-if ($definitions.ScoopApps.Count -gt 0) {
+if ($doInstall -and $definitions.ScoopApps.Count -gt 0) {
     $scoopFile = [System.IO.Path]::GetTempFileName()
     try {
         $scoopConfig = [ordered]@{
@@ -301,7 +306,7 @@ if ($definitions.ScoopApps.Count -gt 0) {
     }
 }
 
-if ($definitions.WingetPackages.Count -gt 0) {
+if ($doInstall -and $definitions.WingetPackages.Count -gt 0) {
     $wingetFile = [System.IO.Path]::GetTempFileName()
     try {
         $wingetConfig = [ordered]@{
@@ -337,6 +342,7 @@ if ($definitions.WingetPackages.Count -gt 0) {
     }
 }
 
+if ($doLink) {
 foreach ($linkDefinition in $definitions.Links) {
     $sourcePath = Expand-HomePath -Path $linkDefinition.Source
     $targetPath = Expand-HomePath -Path $linkDefinition.Target
@@ -378,4 +384,5 @@ foreach ($linkDefinition in $definitions.Links) {
         New-Item -ItemType SymbolicLink -Path $targetAbs -Target $sourceAbs | Out-Null
         Write-Host "linked: $targetAbs -> $sourceAbs"
     }
+}
 }
