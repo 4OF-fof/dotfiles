@@ -10,11 +10,14 @@ links:
 brew:
   - git
   - gh
+  - lazygit
 scoop:
   - source: main
     name: git
   - source: main
     name: gh
+  - source: extras
+    name: lazygit
 ---
 
 # Git
