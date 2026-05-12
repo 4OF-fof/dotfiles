@@ -7,6 +7,7 @@ brew:
   - lsd
   - ripgrep
   - uv
+  - yazi
   - zoxide
 scoop:
   - source: main
@@ -25,6 +26,8 @@ scoop:
     name: ripgrep
   - source: main
     name: uv
+  - source: main
+    name: yazi
   - source: main
     name: zoxide
 ---
