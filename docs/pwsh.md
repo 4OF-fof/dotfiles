@@ -1,16 +1,11 @@
 ---
-links:
-  - source: pwsh/Microsoft.PowerShell_profile.ps1
-    target: ~/Documents/PowerShell/Microsoft.PowerShell_profile.ps1
-    host: ["windows"]
-  - source: pwsh/module
-    target: ~/Documents/PowerShell/module
-    host: ["windows"]
 ---
 
 # PowerShell
 
 Windows 環境での PowerShell 設定。
+
+WSL の NixOS から `wsl` profile を適用し、`/mnt/c/Users/fof/Documents/PowerShell` へ展開する。
 
 ## Microsoft.PowerShell_profile.ps1
 

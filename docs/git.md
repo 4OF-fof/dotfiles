@@ -1,16 +1,4 @@
 ---
-links:
-  - source: git/.gitconfig
-    target: ~/.gitconfig
-  - source: git/.gitignore_global
-    target: ~/.gitignore_global
-  - source: git/.gitconfig_win
-    target: ~/.gitconfig.local
-    host: ["windows"]
-brew:
-  - git
-  - gh
-  - lazygit
 scoop:
   - source: main
     name: git
@@ -24,14 +12,10 @@ scoop:
 
 Gitのグローバル設定。
 
-## .gitconfig
+## Nix
 
-- user.name / user.email を 設定
+- `nix/modules/git.nix` で Home Manager の `programs.git.settings` を設定
+- user.name / user.email を設定
 - デフォルトブランチを master に設定
-- core.excludesFile でグローバルな gitignore を参照
-
-## .gitignore_global
-
-全リポジトリ共通で無視したいファイルを定義。
-
-- `.env` — 環境変数ファイル
+- `.env` をグローバル ignore に設定
+- Windows 用の `core.sshCommand` は Nix の hostPlatform 分岐で設定

@@ -16,8 +16,5 @@ local = "~/.zsh_module/alias"
 [plugins.abbr]
 local = "~/.zsh_module/abbr"
 
-[plugins.abbr-highlight]
-local = "~/.zsh_module/abbr-highlight"
-
 [plugins.zoxide]
 local = "~/.zsh_module/zoxide"

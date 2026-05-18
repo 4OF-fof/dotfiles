@@ -1,8 +1,4 @@
 ---
-links:
-  - source: starship/starship.toml
-    target: ~/.config/starship.toml
-brew: starship
 scoop:
   source: main
   name: starship
@@ -12,7 +8,7 @@ scoop:
 
 クロスシェルプロンプトの設定。
 
-## starship.toml
+## Nix
 
-- JSON Schema を指定してエディタでの補完を有効化
+- macOS では `nix/modules/starship.nix` で `programs.starship.settings` を設定
 - デフォルト設定をベースに、必要に応じてカスタマイズ
