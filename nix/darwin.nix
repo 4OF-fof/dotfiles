@@ -10,6 +10,6 @@
 
   programs.zsh.enable = true;
 
-  system.primaryUser = "fof";
+  system.primaryUser = "mukai";
   system.stateVersion = 6;
 }

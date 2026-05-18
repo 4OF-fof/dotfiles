@@ -42,10 +42,11 @@
             ./nix/darwin.nix
             home-manager.darwinModules.home-manager
             {
-              users.users.fof.home = "/Users/fof";
+              users.users.mukai.home = "/Users/mukai";
+              home-manager.backupFileExtension = "old";
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.fof = import ./nix/home.nix;
+              home-manager.users.mukai = import ./nix/home.nix;
             }
           ];
         };
