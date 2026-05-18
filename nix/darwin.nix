@@ -10,6 +10,16 @@
 
   programs.zsh.enable = true;
 
+  system.activationScripts.postActivation.text = ''
+    echo "linking Home Manager applications..." >&2
+    rm -rf "/Applications/Nix Apps"
+    mkdir -p "/Applications/Nix Apps"
+    for app in "/Users/mukai/Applications/Home Manager Apps"/*.app; do
+      [ -e "$app" ] || continue
+      ln -sfn "$app" "/Applications/Nix Apps/$(basename "$app")"
+    done
+  '';
+
   system.primaryUser = "mukai";
   system.stateVersion = 6;
 }

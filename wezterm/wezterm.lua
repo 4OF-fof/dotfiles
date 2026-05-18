@@ -3,7 +3,7 @@ local mux = wezterm.mux
 local config = wezterm.config_builder()
 
 local is_mac = wezterm.target_triple:match("darwin") ~= nil
-local tmux = is_mac and "/Users/mukai/.nix-profile/bin/tmux" or "tmux"
+local tmux = is_mac and "/etc/profiles/per-user/mukai/bin/tmux" or "tmux"
 
 config.default_prog = { tmux }
 
