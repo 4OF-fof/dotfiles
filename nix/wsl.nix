@@ -27,7 +27,12 @@
     backupFileExtension = "old";
     useGlobalPkgs = true;
     useUserPackages = true;
-    users.fof = import ./home.nix;
+    users.fof = {
+      imports = [
+        ./home.nix
+        ./modules/wsl-windows.nix
+      ];
+    };
   };
 
   system.stateVersion = "24.11";
