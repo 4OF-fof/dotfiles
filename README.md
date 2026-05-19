@@ -5,12 +5,7 @@ nix run nix-darwin/master#darwin-rebuild --extra-experimental-features nix-comma
 
 Windows(WSL NixOS + Home Manager)
 ```sh
-nix run home-manager/master -- switch --flake .#wsl
+sudo nixos-rebuild switch --flake .#wsl
 ```
 
 Windows 上の設定ファイルは WSL の NixOS から `/mnt/c/Users/fof/...` へ展開します。
-
-Vite+
-```sh
-curl -fsSL https://vite.plus | bash
-```

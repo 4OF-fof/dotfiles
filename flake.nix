@@ -11,6 +11,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-wsl = {
+      url = "github:nix-community/NixOS-WSL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -19,6 +23,7 @@
       nixpkgs,
       nix-darwin,
       home-manager,
+      nixos-wsl,
     }:
     let
       mkHome =
@@ -52,6 +57,19 @@
         };
       };
 
-      homeConfigurations = { };
+      nixosConfigurations = {
+        wsl = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            nixos-wsl.nixosModules.default
+            home-manager.nixosModules.home-manager
+            ./nix/wsl.nix
+          ];
+        };
+      };
+
+      homeConfigurations = {
+        wsl = mkHome "x86_64-linux" "fof" "/home/fof" [ ];
+      };
     };
 }
