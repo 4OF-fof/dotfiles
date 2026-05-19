@@ -16,7 +16,7 @@
     mkdir -p "/Applications/Nix Apps"
     for app in "/Users/mukai/Applications/Home Manager Apps"/*.app; do
       [ -e "$app" ] || continue
-      ln -sfn "$app" "/Applications/Nix Apps/$(basename "$app")"
+      ln -s "$app" "/Applications/Nix Apps/$(basename "$app")"
     done
   '';
 

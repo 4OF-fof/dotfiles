@@ -8,6 +8,7 @@
     ./modules/nvim.nix
     ./modules/wezterm.nix
     ./modules/zed.nix
+    ./modules/opencode.nix
   ];
 
   home.stateVersion = "24.11";
