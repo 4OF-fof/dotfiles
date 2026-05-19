@@ -1,5 +1,4 @@
 {
-  lib,
   pkgs,
   ...
 }:
@@ -16,9 +15,6 @@
           email = "4OF@4of.dev";
         };
         init.defaultBranch = "master";
-      }
-      // lib.optionalAttrs pkgs.stdenv.hostPlatform.isWindows {
-        core.sshCommand = "C:/Windows/System32/OpenSSH/ssh.exe";
       };
   };
 }

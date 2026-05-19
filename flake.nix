@@ -52,10 +52,6 @@
         };
       };
 
-      homeConfigurations = {
-        wsl = mkHome "x86_64-linux" "fof" "/home/fof" [
-          ./nix/modules/windows.nix
-        ];
-      };
+      homeConfigurations = { };
     };
 }
