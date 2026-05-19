@@ -1,14 +1,14 @@
 {
   imports = [
     ./modules/packages.nix
-    ./modules/git.nix
-    ./modules/zsh.nix
-    ./modules/tmux.nix
-    ./modules/starship.nix
-    ./modules/nvim.nix
-    ./modules/wezterm.nix
-    ./modules/zed.nix
-    ./modules/opencode.nix
+    ./modules/apps/git.nix
+    ./modules/apps/zsh.nix
+    ./modules/apps/tmux.nix
+    ./modules/apps/starship.nix
+    ./modules/apps/nvim.nix
+    ./modules/apps/wezterm.nix
+    ./modules/apps/zed.nix
+    ./modules/apps/opencode.nix
   ];
 
   home.stateVersion = "24.11";

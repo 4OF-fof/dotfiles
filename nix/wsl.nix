@@ -30,7 +30,7 @@
     users.${username} = {
       imports = [
         ./home.nix
-        ./modules/wsl-windows.nix
+        ./modules/platforms/wsl-windows.nix
       ];
     };
   };
