@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 {
   nix.settings.experimental-features = [
@@ -10,15 +10,15 @@
 
   wsl = {
     enable = true;
-    defaultUser = "fof";
+    defaultUser = username;
     startMenuLaunchers = true;
   };
 
   programs.zsh.enable = true;
 
-  users.users.fof = {
+  users.users.${username} = {
     isNormalUser = true;
-    description = "fof";
+    description = username;
     extraGroups = [ "wheel" ];
     shell = pkgs.zsh;
   };
@@ -27,7 +27,7 @@
     backupFileExtension = "old";
     useGlobalPkgs = true;
     useUserPackages = true;
-    users.fof = {
+    users.${username} = {
       imports = [
         ./home.nix
         ./modules/wsl-windows.nix

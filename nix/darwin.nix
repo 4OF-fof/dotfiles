@@ -1,4 +1,8 @@
-{ pkgs, ... }:
+{ config, ... }:
+
+let
+  userHome = config.users.users.${config.system.primaryUser}.home;
+in
 
 {
   nix.settings.experimental-features = [
@@ -14,12 +18,11 @@
     echo "linking Home Manager applications..." >&2
     rm -rf "/Applications/Nix Apps"
     mkdir -p "/Applications/Nix Apps"
-    for app in "/Users/mukai/Applications/Home Manager Apps"/*.app; do
+    for app in "${userHome}/Applications/Home Manager Apps"/*.app; do
       [ -e "$app" ] || continue
       ln -s "$app" "/Applications/Nix Apps/$(basename "$app")"
     done
   '';
 
-  system.primaryUser = "mukai";
   system.stateVersion = 6;
 }

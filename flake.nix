@@ -26,6 +26,16 @@
       nixos-wsl,
     }:
     let
+      canonicalUser = "fof";
+      envOr =
+        name: default:
+        let
+          value = builtins.getEnv name;
+        in
+        if value == "" then default else value;
+
+      user = envOr "DOTFILES_USER" canonicalUser;
+
       mkHome =
         system: username: homeDirectory: extraModules:
         home-manager.lib.homeManagerConfiguration {
@@ -38,28 +48,36 @@
             }
           ] ++ extraModules;
         };
-    in
-    {
-      darwinConfigurations = {
-        mac = nix-darwin.lib.darwinSystem {
+
+      mkDarwin =
+        username:
+        nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
           modules = [
             ./nix/darwin.nix
             home-manager.darwinModules.home-manager
             {
-              users.users.mukai.home = "/Users/mukai";
+              users.users.${username}.home = "/Users/${username}";
               home-manager.backupFileExtension = "old";
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.mukai = import ./nix/home.nix;
+              home-manager.users.${username} = import ./nix/home.nix;
+              system.primaryUser = username;
             }
           ];
         };
+    in
+    {
+      darwinConfigurations = {
+        mac = mkDarwin user;
       };
 
       nixosConfigurations = {
         wsl = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
+          specialArgs = {
+            username = user;
+          };
           modules = [
             nixos-wsl.nixosModules.default
             home-manager.nixosModules.home-manager
@@ -69,7 +87,7 @@
       };
 
       homeConfigurations = {
-        wsl = mkHome "x86_64-linux" "fof" "/home/fof" [ ./nix/modules/wsl-windows.nix ];
+        wsl = mkHome "x86_64-linux" user "/home/${user}" [ ./nix/modules/wsl-windows.nix ];
       };
     };
 }
