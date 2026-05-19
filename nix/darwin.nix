@@ -15,12 +15,14 @@ in
   programs.zsh.enable = true;
 
   system.activationScripts.postActivation.text = ''
-    echo "linking Home Manager applications..." >&2
+    echo "copying Home Manager applications..." >&2
     rm -rf "/Applications/Nix Apps"
     mkdir -p "/Applications/Nix Apps"
     for app in "${userHome}/Applications/Home Manager Apps"/*.app; do
       [ -e "$app" ] || continue
-      ln -s "$app" "/Applications/Nix Apps/$(basename "$app")"
+      target="/Applications/Nix Apps/$(basename "$app")"
+      source="$(realpath "$app")"
+      cp -cR "$source" "$target" 2>/dev/null || cp -R "$source" "$target"
     done
   '';
 
