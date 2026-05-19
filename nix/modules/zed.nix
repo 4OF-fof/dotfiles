@@ -62,6 +62,10 @@ let
   };
 in
 {
+  home.packages = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+    pkgs.zed-editor
+  ];
+
   xdg.configFile = {
     "zed/settings.json".text = builtins.toJSON settings;
     "zed/settings.json".enable = pkgs.stdenv.hostPlatform.isDarwin;

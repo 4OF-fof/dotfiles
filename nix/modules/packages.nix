@@ -1,28 +1,16 @@
-{ lib, pkgs, ... }:
+{ pkgs, ... }:
 
 {
-  home.packages =
-    with pkgs;
-    [
-      bat
-      fd
-      fzf
-      gh
-      git
-      lazygit
-      lsd
-      neovim
-      opencode
-      ripgrep
-      sheldon
-      starship
-      tmux
-      uv
-      yazi
-      zoxide
-    ]
-    ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-      wezterm
-      zed-editor
-    ];
+  home.packages = with pkgs; [
+    bat
+    fd
+    fzf
+    gh
+    lazygit
+    lsd
+    ripgrep
+    uv
+    yazi
+    zoxide
+  ];
 }

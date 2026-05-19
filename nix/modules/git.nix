@@ -7,6 +7,7 @@
 {
   programs.git = {
     enable = true;
+    package = pkgs.git;
     ignores = [ ".env" ];
     settings =
       {

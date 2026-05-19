@@ -1,4 +1,10 @@
+{ pkgs, ... }:
+
 {
+  home.packages = with pkgs; [
+    sheldon
+  ];
+
   home.file = {
     ".zshrc".text = builtins.readFile ../../zsh/.zshrc;
     ".zsh_module/alias/alias.zsh".text = builtins.readFile ../../zsh/module/alias/alias.zsh;
