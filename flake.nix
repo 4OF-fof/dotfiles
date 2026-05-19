@@ -87,7 +87,7 @@
       };
 
       homeConfigurations = {
-        wsl = mkHome "x86_64-linux" user "/home/${user}" [ ./nix/modules/wsl-windows.nix ];
+        wsl = mkHome "x86_64-linux" user "/home/${user}" [ ./nix/modules/platforms/wsl-windows.nix ];
       };
     };
 }

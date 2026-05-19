@@ -7,12 +7,7 @@
 
 let
   windowsGitConfig = pkgs.writeText "windows-gitconfig" (
-    lib.generators.toGitINI (
-      config.programs.git.settings
-      // {
-        core.sshCommand = "C:/Windows/System32/OpenSSH/ssh.exe";
-      }
-    )
+    lib.generators.toGitINI config.dotfiles.git.windowsSettings
   );
 in
 {
