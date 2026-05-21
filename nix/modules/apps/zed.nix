@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   settings = {
@@ -60,14 +60,17 @@ let
       opencode = true;
     };
   };
+  settingsFile = pkgs.writeText "zed-settings.json" (builtins.toJSON settings);
 in
 {
   home.packages = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
     pkgs.zed-editor
   ];
 
-  xdg.configFile = {
-    "zed/settings.json".text = builtins.toJSON settings;
-    "zed/settings.json".enable = pkgs.stdenv.hostPlatform.isDarwin;
-  };
+  home.activation.copyZedSettings = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      mkdir -p ${config.xdg.configHome}/zed
+      cp ${settingsFile} ${config.xdg.configHome}/zed/settings.json
+    ''
+  );
 }
