@@ -8,7 +8,7 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
   "edit_predictions": {
-    "provider": "copilot"
+    "provider": "copilot",
   },
   "language_models": {
     "opencode": {
@@ -74,6 +74,7 @@
     "html": true,
     "toml": true,
     "lua": true,
+    "oxc": true,
     "git-firefly": true,
     "material-icon-theme": true,
     "opencode": true,
