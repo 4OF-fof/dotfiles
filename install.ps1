@@ -112,6 +112,7 @@ function Get-FrontMatterDefinitions {
 
     $links = [System.Collections.ArrayList]::new()
     $scoopApps = [System.Collections.ArrayList]::new()
+    $scoopBuckets = [System.Collections.ArrayList]::new()
     $wingetPackages = [System.Collections.ArrayList]::new()
     $script:seen = [System.Collections.Generic.HashSet[string]]::new()
     $foundFrontMatter = $false
@@ -126,6 +127,7 @@ function Get-FrontMatterDefinitions {
         $section = ""
         $currentLink = $null
         $currentScoop = $null
+        $currentScoopBucket = $null
         $inWindows = $false
         $closed = $false
 
@@ -149,6 +151,16 @@ function Get-FrontMatterDefinitions {
             Set-Variable -Name currentScoop -Value $null -Scope 1
         }
 
+        function Flush-ScoopBucket {
+            if ($null -ne $currentScoopBucket -and $currentScoopBucket.Name -and $currentScoopBucket.Source) {
+                Add-UniqueObject -List $scoopBuckets -Value ([ordered]@{
+                    Name = $currentScoopBucket.Name
+                    Source = $currentScoopBucket.Source
+                }) -Key "scoop_bucket`t$($currentScoopBucket.Name)`t$($currentScoopBucket.Source)"
+            }
+            Set-Variable -Name currentScoopBucket -Value $null -Scope 1
+        }
+
         for ($i = 1; $i -lt $lines.Count; $i++) {
             $rawLine = $lines[$i]
             $line = $rawLine.TrimEnd()
@@ -156,13 +168,15 @@ function Get-FrontMatterDefinitions {
             if ($line -eq "---") {
                 Flush-Link
                 Flush-Scoop
+                Flush-ScoopBucket
                 $closed = $true
                 break
             }
 
-            if ($line -match '^(links|scoop):\s*$') {
+            if ($line -match '^(links|scoop|scoop_bucket):\s*$') {
                 Flush-Link
                 Flush-Scoop
+                Flush-ScoopBucket
                 $section = $matches[1]
                 $inWindows = $false
                 continue
@@ -171,6 +185,7 @@ function Get-FrontMatterDefinitions {
             if ($line -match '^winget:\s*(.+)$') {
                 Flush-Link
                 Flush-Scoop
+                Flush-ScoopBucket
                 $section = ""
                 $packageIdentifier = $matches[1].Trim().Trim('"')
                 if ($packageIdentifier) {
@@ -182,6 +197,7 @@ function Get-FrontMatterDefinitions {
             if ($line -match '^[A-Za-z0-9_-]+:') {
                 Flush-Link
                 Flush-Scoop
+                Flush-ScoopBucket
                 $section = ""
                 $inWindows = $false
                 continue
@@ -247,6 +263,29 @@ function Get-FrontMatterDefinitions {
                 $currentScoop.Name = $matches[1].Trim().Trim('"')
                 continue
             }
+
+            if ($section -eq "scoop_bucket" -and $line -match '^  - source:\s*(.+)$') {
+                Flush-ScoopBucket
+                $currentScoopBucket = [ordered]@{
+                    Source = $matches[1].Trim().Trim('"')
+                    Name = $null
+                }
+                continue
+            }
+
+            if ($section -eq "scoop_bucket" -and $line -match '^  source:\s*(.+)$') {
+                Flush-ScoopBucket
+                $currentScoopBucket = [ordered]@{
+                    Source = $matches[1].Trim().Trim('"')
+                    Name = $null
+                }
+                continue
+            }
+
+            if ($section -eq "scoop_bucket" -and $null -ne $currentScoopBucket -and $line -match '^\s+name:\s*(.+)$') {
+                $currentScoopBucket.Name = $matches[1].Trim().Trim('"')
+                continue
+            }
         }
 
         if (-not $closed) {
@@ -261,6 +300,7 @@ function Get-FrontMatterDefinitions {
     return [pscustomobject]@{
         Links = @($links)
         ScoopApps = @($scoopApps)
+        ScoopBuckets = @($scoopBuckets)
         WingetPackages = @($wingetPackages)
     }
 }
@@ -271,20 +311,22 @@ if ($definitions.Links.Count -eq 0) {
     throw "no link definitions found in docs front matter: $docsDir"
 }
 
-if ($doInstall -and $definitions.ScoopApps.Count -gt 0) {
+if ($doInstall -and ($definitions.ScoopApps.Count -gt 0 -or $definitions.ScoopBuckets.Count -gt 0)) {
     $scoopFile = [System.IO.Path]::GetTempFileName()
     try {
+        $defaultBuckets = @(
+            [ordered]@{
+                Name = "main"
+                Source = "https://github.com/ScoopInstaller/Main.git"
+            },
+            [ordered]@{
+                Name = "extras"
+                Source = "https://github.com/ScoopInstaller/Extras"
+            }
+        )
+        $allBuckets = $defaultBuckets + @($definitions.ScoopBuckets)
         $scoopConfig = [ordered]@{
-            buckets = @(
-                [ordered]@{
-                    Name = "main"
-                    Source = "https://github.com/ScoopInstaller/Main.git"
-                },
-                [ordered]@{
-                    Name = "extras"
-                    Source = "https://github.com/ScoopInstaller/Extras"
-                }
-            )
+            buckets = $allBuckets
             apps = @($definitions.ScoopApps)
         }
         $scoopConfig | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $scoopFile -Encoding UTF8

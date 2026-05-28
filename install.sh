@@ -150,6 +150,17 @@ FRONTMATTER_DEFINITIONS="$(
       emit_brew(value)
       next
     }
+    /^brew_tap:[[:space:]]*$/ {
+      reset_section("brew_tap")
+      next
+    }
+    /^brew_tap:[[:space:]]*[^[:space:]]/ {
+      reset_section("")
+      value = $0
+      sub(/^brew_tap:[[:space:]]*/, "", value)
+      emit_once("TAP", value)
+      next
+    }
     /^cask:[[:space:]]*$/ {
       reset_section("cask")
       next
@@ -175,6 +186,12 @@ FRONTMATTER_DEFINITIONS="$(
       value = $0
       sub(/^  -[[:space:]]*/, "", value)
       emit_once("CASK", value)
+      next
+    }
+    section == "brew_tap" && /^  - / {
+      value = $0
+      sub(/^  -[[:space:]]*/, "", value)
+      emit_once("TAP", value)
       next
     }
     section == "links" && /^  - source:[[:space:]]*/ {
@@ -223,6 +240,7 @@ FRONTMATTER_DEFINITIONS="$(
 LINK_DEFINITIONS="$(awk -F '\t' '$1 == "LINK" { print $2 "\t" $3 }' <<<"${FRONTMATTER_DEFINITIONS}")"
 BREW_DEFINITIONS="$(awk -F '\t' '$1 == "BREW" { print $2 }' <<<"${FRONTMATTER_DEFINITIONS}")"
 CASK_DEFINITIONS="$(awk -F '\t' '$1 == "CASK" { print $2 }' <<<"${FRONTMATTER_DEFINITIONS}")"
+TAP_DEFINITIONS="$(awk -F '\t' '$1 == "TAP" { print $2 }' <<<"${FRONTMATTER_DEFINITIONS}")"
 
 if [[ -z "${LINK_DEFINITIONS}" ]]; then
   echo "no link definitions found in docs front matter: ${DOCS_DIR}" >&2
@@ -236,6 +254,11 @@ cleanup() {
 trap cleanup EXIT
 
 {
+  while IFS= read -r tap_name; do
+    [[ -n "${tap_name}" ]] || continue
+    printf 'tap "%s"\n' "${tap_name}"
+  done <<<"${TAP_DEFINITIONS}"
+
   while IFS= read -r formula_name; do
     [[ -n "${formula_name}" ]] || continue
     printf 'brew "%s"\n' "${formula_name}"
