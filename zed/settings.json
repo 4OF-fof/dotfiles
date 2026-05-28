@@ -20,7 +20,7 @@
     "opencode": {
       "type": "registry",
       "favorite_config_option_values": {
-        "model": ["opencode-go/kimi-k2.6", "opencode-go/qwen3.6-plus"],
+        "model": ["opencode-go/qwen3.6-plus", "opencode-go/deepseek-v4-pro"],
       },
     },
   },
@@ -35,21 +35,23 @@
   },
   "agent": {
     "default_model": {
+      "effort": "max",
       "provider": "opencode",
-      "model": "go/qwen3.6-plus",
-      "enable_thinking": false,
+      "model": "go/deepseek-v4-pro",
+      "enable_thinking": true,
     },
     "dock": "right",
     "favorite_models": [
       {
         "provider": "opencode",
-        "model": "go/kimi-k2.6",
+        "model": "go/qwen3.6-plus",
         "enable_thinking": false,
       },
       {
         "provider": "opencode",
-        "model": "go/qwen3.6-plus",
-        "enable_thinking": false,
+        "model": "go/deepseek-v4-pro",
+        "enable_thinking": true,
+        "effort": "max",
       },
     ],
     "model_parameters": [],
