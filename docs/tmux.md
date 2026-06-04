@@ -5,10 +5,10 @@ links:
   - source: tmux/module
     target: ~/tmux
 brew: tmux
-scoop:
-  source: main
-  name: psmux
 ---
+
+# Memo
+windows側はwslのtmuxを使用
 
 # Tmux
 
